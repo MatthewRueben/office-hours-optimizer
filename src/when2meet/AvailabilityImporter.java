@@ -1,3 +1,5 @@
+package when2meet;
+
 import java.io.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
