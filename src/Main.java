@@ -1,3 +1,6 @@
+import when2meet.AvailabilityImporter;
+import when2meet.When2MeetRecreator;
+
 /**
  * @author Matthew Rueben
  */
@@ -6,8 +9,14 @@ public class Main
     public static void main(String[] args)
     {
         // Read in CSV.
+        String csvFilename = "test.csv";
+        int numPeople = 9;
+        int numDays = 3;
+        int numTimes = 4;
+        boolean[][][] available = AvailabilityImporter.load(csvFilename, numPeople, numDays, numTimes);
 
         // Visualize availability to check against When2Meet.
+        //When2MeetRecreator.draw(available);
 
         // Stretch feature: use "Dr. Rueben" entry as constraints.
 
