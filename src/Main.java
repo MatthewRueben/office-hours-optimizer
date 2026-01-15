@@ -1,6 +1,5 @@
-import search.ScheduleSurfer;
+import search.*;
 import when2meet.AvailabilityImporter;
-import when2meet.When2MeetRecreator;
 
 /**
  * @author Matthew Rueben
@@ -27,12 +26,13 @@ public class Main
         ScheduleSurfer scheduleSurfer = new ScheduleSurfer(numDays, numTimes, windowDuration, numWindowsInSchedule);
 
         // Set up ScheduleScorer.
+        int minSlotsToCountAsAttendable = 2; // I.e., 30 minutes.
+        ScheduleScorer scheduleScorer = new ScheduleScorerByWindowsThenSlots(available, minSlotsToCountAsAttendable);
 
-        // Set up SearchDirector.
-//        boolean backtrackingOn = true;
-//        int initialMaxMin = -1;
-//        GroupingSearchForMaxMin searchDirector = new GroupingSearchForMaxMin(scorer, backtrackingOn, initialMaxMin);
-        // browser.setSearchDirector(searchDirector);
+        // Set up ScheduleSearch.
+        boolean backtrackingOn = false;
+        ScheduleSearch searchManager = new ScheduleSearchForMaxMin(scheduleScorer, backtrackingOn);
+        scheduleSurfer.setSearchManager(searchManager);
 
         // Run search!
         System.out.println("Trying to find " + numWindowsInSchedule + " windows of " + windowDuration + " slots each ...");
@@ -42,15 +42,7 @@ public class Main
         System.out.println("Full groupings explored: " + scheduleSurfer.getNumSchedulesFound());
         System.out.printf("Time taken for generation: %.2f seconds%n", (endTime - startTime) / 1000.0);
 
-        // For ScheduleSurfer:
-        // Exhaustive search without pruning.
-        // First hour starts at earliest time.
-        // Subsequent hours start just after end of previous hour.
-        // End when last hour couldn't find any valid places to be.
-
-        // For SearchDirector:
-        // Objective function: maximize the minimum of first metric, then second metric.
-        // Keep track of best 10 schedules.
+        searchManager.printReport();
 
         // User selects a schedule from the list.
 

@@ -1,6 +1,6 @@
 package search;
 
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,37 +19,21 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
 
     //private final HashMap<List<Window>, List<Integer>> savedScores;
 
-    public ScheduleScorerByWindowsThenSlots(boolean[][][] available, int minAdjacentSlotsToCount)//, int initialSaveCapacity)
+    public ScheduleScorerByWindowsThenSlots(boolean[][][] available, int minSlotsToCountAsAttendable)//, int initialSaveCapacity)
     {
         this.available = available;
         this.numPeople = available.length;
         this.numDays = available[0].length;
         this.numTimes = available[0][0].length;
 
-        this.minSlotsToCountAsAttendable = minAdjacentSlotsToCount;
+        this.minSlotsToCountAsAttendable = minSlotsToCountAsAttendable;
 
         //this.savedScores = new HashMap<>(initialSaveCapacity);
     }
 
 
-    public static int calcNumPossibleGroupsOfOneSize(int numPeople, int groupSize) {
-        BigInteger binom = BigInteger.ONE;
-        for (int i = 1; i <= groupSize; i++) {
-            binom = binom.multiply(BigInteger.valueOf(numPeople + 1 - i));
-            binom = binom.divide(BigInteger.valueOf(i));
-        }
-        return binom.intValueExact();
-    }
-
-
-    public int[][] getScoresForSchedule(List<Window> schedule)
+    public List<Score> getScoresForSchedule(List<Window> schedule)
     {
-//        if (personIndices.size() == 1)
-//        {
-//            System.err.println("Tried to find the coavailability score of a 1-person group!");
-//            return -1;
-//        }
-
         //if (this.savedScores.containsKey(personIndices))
         //{
             //System.out.println("Retrieving saved score.");
@@ -63,14 +47,14 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
     }
 
 
-    private int[][] calcScoresForSchedule(List<Window> schedule)//, boolean saveIt)
+    private List<Score> calcScoresForSchedule(List<Window> schedule)//, boolean saveIt)
     {
-        int[][] scheduleScores = new int[this.numPeople][2];
+        List<Score> scheduleScores = new ArrayList<>(this.numPeople);
 
         for (int personIndex = 0; personIndex < this.numPeople; personIndex++)
         {
-            int windowsCountedAsAttendable = 0;
-            int attendableSlotsTotal = 0;
+            int attendableWindows = 0;
+            int attendableSlots = 0;
             for (Window window : schedule)
             {
                 int attendableSlotsOfThisWindow = 0;
@@ -83,15 +67,15 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
                         attendableSlotsOfThisWindow++;
                     }
                 }
-                attendableSlotsTotal += attendableSlotsOfThisWindow;
+                attendableSlots += attendableSlotsOfThisWindow;
 
                 if (attendableSlotsOfThisWindow >= minSlotsToCountAsAttendable)
                 {
-                    windowsCountedAsAttendable++;
+                    attendableWindows++;
                 }
             }
-            scheduleScores[personIndex][0] = windowsCountedAsAttendable;
-            scheduleScores[personIndex][1] = attendableSlotsTotal;
+            Score scheduleScore = new Score(personIndex, attendableWindows, attendableSlots);
+            scheduleScores.add(scheduleScore);
         }
 
 //        if (saveIt)

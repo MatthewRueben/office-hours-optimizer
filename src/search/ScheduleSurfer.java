@@ -8,10 +8,10 @@ import java.util.*;
  */
 public class ScheduleSurfer {
 
-    public final int NUM_DAYS;
-    public final int NUM_TIMES;
-    public final int WINDOW_DURATION;
-    public final int NUM_WINDOWS_IN_SCHEDULE;
+    public final int numDays;
+    public final int numTimes;
+    public final int windowDuration;
+    public final int numWindowsToSchedule;
 
     private long numSchedulesFound = 0;
     //public long numCallsToPartnerFinder = 0;
@@ -23,17 +23,17 @@ public class ScheduleSurfer {
     private ScheduleSearch director = null;
 
 
-    public ScheduleSurfer(int numDays, int numTimes, int windowDuration, int numWindowsInSchedule)
+    public ScheduleSurfer(int numDays, int numTimes, int windowDuration, int numWindowsToSchedule)
     {
-        this.NUM_DAYS = numDays;
-        this.NUM_TIMES = numTimes;
-        this.WINDOW_DURATION = windowDuration;
-        this.NUM_WINDOWS_IN_SCHEDULE = numWindowsInSchedule;
-        currentSchedule = new ArrayList<>(numWindowsInSchedule);
+        this.numDays = numDays;
+        this.numTimes = numTimes;
+        this.windowDuration = windowDuration;
+        this.numWindowsToSchedule = numWindowsToSchedule;
+        currentSchedule = new ArrayList<>(numWindowsToSchedule);
     }
 
 
-    public void setSearchDirector(ScheduleSearch director)
+    public void setSearchManager(ScheduleSearch director)
     {
         this.director = director;
     }
@@ -55,16 +55,17 @@ public class ScheduleSurfer {
 //        }
 
         // Base Case: we have defined a complete schedule.
-        if (this.currentSchedule.size() == this.NUM_WINDOWS_IN_SCHEDULE) {
+        if (this.currentSchedule.size() == this.numWindowsToSchedule) {
 
             // Save it.
             if (this.director != null)
             {
-                this.director.submitValidSchedule(currentSchedule);
+                List<Window> copyOfCurrentSchedule = new ArrayList<>(currentSchedule);
+                this.director.submitValidSchedule(copyOfCurrentSchedule);
             }
             this.numSchedulesFound++;
-            // Uncomment the line below if you want to print all groupings (only for very small N)
-            System.out.println("Grouping #" + this.numSchedulesFound + ": " + this.currentSchedule);
+            // Uncomment the line below if you want to print all groupings (only for very small N).
+//            System.out.println("Grouping #" + this.numSchedulesFound + ": " + this.currentSchedule);
 
             // Backtrack.
             return;
@@ -105,9 +106,9 @@ public class ScheduleSurfer {
     {
         List<Window> validFutureWindows = new ArrayList<>();
 
-        for (int day = firstDayToTry; day < this.NUM_DAYS; day++)
+        for (int day = firstDayToTry; day < this.numDays; day++)
         {
-            int finalValidStartTime = this.NUM_TIMES - this.WINDOW_DURATION;
+            int finalValidStartTime = this.numTimes - this.windowDuration;
 
             int startTime;
             if (day == firstDayToTry)
@@ -121,7 +122,7 @@ public class ScheduleSurfer {
 
             for ( ; startTime <= finalValidStartTime; startTime++)
             {
-                validFutureWindows.add(new Window(day, startTime, this.WINDOW_DURATION));
+                validFutureWindows.add(new Window(day, startTime, this.windowDuration));
             }
         }
         return validFutureWindows;
