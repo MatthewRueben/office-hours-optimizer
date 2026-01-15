@@ -39,13 +39,18 @@ public class ScheduleSurfer {
     }
 
 
-    public long getNumSchedulesFound() { return this.numSchedulesFound; }
-    //public long getNumCallsToPartnerFinder() { return this.numCallsToPartnerFinder; }
+    public void findAllSchedules()
+    {
+        System.out.println("Trying to find " + this.numWindowsToSchedule + " windows of " + this.windowDuration + " slots each ...");
+        long startTime = System.currentTimeMillis();
+        this.findAllScheduleCompletions();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Full groupings explored: " + this.numSchedulesFound);
+        System.out.printf("Time taken for generation: %.2f seconds%n", (endTime - startTime) / 1000.0);
+    }
 
+    private void findAllScheduleCompletions() {
 
-    public void findAllScheduleCompletions() {
-
-        //this.numCallsToPartnerFinder++;
 //        try {
 //            Thread.sleep(10); // Pauses the thread for 10 milliseconds
 //        } catch (InterruptedException e) {
@@ -101,6 +106,7 @@ public class ScheduleSurfer {
         }
         return; // Backtrack.
     }
+
 
     private List<Window> findAllValidFutureWindows(int firstDayToTry, int firstStartTimeToTry)
     {

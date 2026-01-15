@@ -34,14 +34,8 @@ public class Main
         ScheduleSearch searchManager = new ScheduleSearchForMaxMin(scheduleScorer, backtrackingOn);
         scheduleSurfer.setSearchManager(searchManager);
 
-        // Run search!
-        System.out.println("Trying to find " + numWindowsInSchedule + " windows of " + windowDuration + " slots each ...");
-        long startTime = System.currentTimeMillis();
-        scheduleSurfer.findAllScheduleCompletions();
-        long endTime = System.currentTimeMillis();
-        System.out.println("Full groupings explored: " + scheduleSurfer.getNumSchedulesFound());
-        System.out.printf("Time taken for generation: %.2f seconds%n", (endTime - startTime) / 1000.0);
-
+        // Get search results!
+        scheduleSurfer.findAllSchedules();
         searchManager.printReport();
 
         // User selects a schedule from the list.
