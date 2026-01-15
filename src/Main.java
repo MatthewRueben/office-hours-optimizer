@@ -1,3 +1,4 @@
+import search.ScheduleSurfer;
 import when2meet.AvailabilityImporter;
 import when2meet.When2MeetRecreator;
 
@@ -20,14 +21,34 @@ public class Main
 
         // Stretch feature: use "Dr. Rueben" entry as constraints.
 
-        // Input desired # of office hours.
+        // Set up ScheduleSurfer.
+        int windowDuration = 3; // I.e., 1 hour.
+        int numWindowsInSchedule = 2;
+        ScheduleSurfer scheduleSurfer = new ScheduleSurfer(numDays, numTimes, windowDuration, numWindowsInSchedule);
 
+        // Set up ScheduleScorer.
+
+        // Set up SearchDirector.
+//        boolean backtrackingOn = true;
+//        int initialMaxMin = -1;
+//        GroupingSearchForMaxMin searchDirector = new GroupingSearchForMaxMin(scorer, backtrackingOn, initialMaxMin);
+        // browser.setSearchDirector(searchDirector);
+
+        // Run search!
+        System.out.println("Trying to find " + numWindowsInSchedule + " windows of " + windowDuration + " slots each ...");
+        long startTime = System.currentTimeMillis();
+        scheduleSurfer.findAllScheduleCompletions();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Full groupings explored: " + scheduleSurfer.getNumSchedulesFound());
+        System.out.printf("Time taken for generation: %.2f seconds%n", (endTime - startTime) / 1000.0);
+
+        // For ScheduleSurfer:
         // Exhaustive search without pruning.
         // First hour starts at earliest time.
         // Subsequent hours start just after end of previous hour.
         // End when last hour couldn't find any valid places to be.
-        // First metric for each respondent: # hours they can attend for at least 30 minutes.
-        // Second (i.e., tiebreaker) metric: total minutes they can attend of proposed hours.
+
+        // For SearchDirector:
         // Objective function: maximize the minimum of first metric, then second metric.
         // Keep track of best 10 schedules.
 
