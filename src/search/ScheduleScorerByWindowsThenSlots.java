@@ -32,6 +32,7 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
     }
 
 
+    @Override
     public List<Score> getScoresForSchedule(List<Window> schedule)
     {
         //if (this.savedScores.containsKey(personIndices))
@@ -84,5 +85,35 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
 //        }
 
         return scheduleScores;
+    }
+
+
+    @Override
+    public void printAttendabilityByPerson(List<Window> schedule)
+    {
+        for (int personIndex = 0; personIndex < this.numPeople; personIndex++)
+        {
+            System.out.print("Person " + personIndex + ": ");
+            for (Window window : schedule)
+            {
+                int dayIndex = window.day;
+                int endTime = window.startTime + (window.duration - 1);
+                for (int timeIndex = window.startTime; timeIndex <= endTime; timeIndex++)
+                {
+                    String attendability;
+                    if (this.available[personIndex][dayIndex][timeIndex])
+                    {
+                        attendability = "Y";
+                    }
+                    else
+                    {
+                        attendability = "-";
+                    }
+                    System.out.print(attendability);
+                }
+                System.out.print(",");
+            }
+            System.out.println();
+        }
     }
 }
