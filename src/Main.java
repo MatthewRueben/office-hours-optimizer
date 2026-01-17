@@ -1,6 +1,5 @@
 import search.*;
 import when2meet.AvailabilityImporter;
-import when2meet.When2MeetRecreator;
 
 /**
  * @author Matthew Rueben
@@ -33,10 +32,10 @@ public class Main
         {
             System.out.println(name);
         }
-        boolean[][][] available = AvailabilityImporter.load(csvFilename, numPeople, numDays, numTimes);
+        boolean[][][] available = AvailabilityImporter.loadAvailability(csvFilename, numPeople, numDays, numTimes);
 
         // Visualize availability to check against When2Meet.
-        When2MeetRecreator.draw(available);
+        //When2MeetRecreator.draw(available);
 
         // Stretch feature: use "Dr. Rueben" entry as constraints.
 
@@ -59,6 +58,6 @@ public class Main
 
         // 1. Print best schedules with their scores.
         // 2. Allow user to inspect attendability of schedules.
-        searchManager.printReport();
+        searchManager.printReport(names);
     }
 }

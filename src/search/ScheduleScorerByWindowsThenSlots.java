@@ -89,11 +89,11 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
 
 
     @Override
-    public void printAttendabilityByPerson(List<Window> schedule)
+    public void printAttendabilityByPerson(List<Window> schedule, String[] names)
     {
         for (int personIndex = 0; personIndex < this.numPeople; personIndex++)
         {
-            System.out.print("Person " + personIndex + ": ");
+            System.out.print(names[personIndex] + ": ");
             for (Window window : schedule)
             {
                 int dayIndex = window.day;

@@ -1,6 +1,7 @@
 package when2meet;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +49,7 @@ public class AvailabilityImporter {
         return names;
     }
 
-    public static boolean[][][] load(String csvFilename, int numPeople, int numDays, int numTimes)
+    public static boolean[][][] loadAvailability(String csvFilename, int numPeople, int numDays, int numTimes)
     {
         String line;
         String cvsSplitBy = ","; // Delimiter used in the CSV file
@@ -67,8 +68,9 @@ public class AvailabilityImporter {
             for (int personIndex = 0; personIndex < numPeople; personIndex++)
             {
                 line = br.readLine();
-                String[] availability = line.split(cvsSplitBy);
 
+                String[] fields = line.split(cvsSplitBy);
+                String[] availability = Arrays.copyOfRange(fields, 1, fields.length);
 
                 int slotIndex;
                 for (int dayIndex = 0; dayIndex < numDays; dayIndex++)

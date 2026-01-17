@@ -79,7 +79,7 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
 
 
     @Override
-    public void printReport()
+    public void printReport(String[] names)
     {
         List<ScoredSchedule> scoredSchedulesSorted = this.scoredSchedules.stream().sorted(Comparator.reverseOrder()).toList();
 
@@ -113,7 +113,7 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
             {
                 int chosenScheduleIndex = input;
                 List<Window> chosenSchedule = scoredSchedulesSorted.get(chosenScheduleIndex).schedule;
-                this.scorer.printAttendabilityByPerson(chosenSchedule);
+                this.scorer.printAttendabilityByPerson(chosenSchedule, names);
             }
         }
     }
