@@ -41,12 +41,25 @@ public class Main
         // Visualize availability to check against When2Meet.
         //When2MeetRecreator.draw(available);
 
-        // Stretch feature: use "Dr. Rueben" entry as constraints.
+        // Load constraints for test case.
+//        boolean[][][] doable = new boolean[1][numDays][numTimes];
+//        for (int dayIndex = 0; dayIndex < numDays; dayIndex++)
+//        {
+//            for (int timeIndex = 0; timeIndex < numTimes; timeIndex++)
+//            {
+//                doable[0][dayIndex][timeIndex] = true;
+//            }
+//        }
+
+        // 2026 Spring, Dr. Rueben's constraints (i.e., slots that are possible).
+        String constraintsFilename = "availabilities_Rueben_2026-Q1-Spring.csv";
+        int numPeopleConstraining = 1;
+        boolean[][][] doable = AvailabilityImporter.loadAvailability(constraintsFilename, numPeopleConstraining, numDays, numTimes);
 
         // Set up ScheduleSurfer.
         int windowDuration = 4; // I.e., 1 hour.
         int numWindowsInSchedule = 4;
-        ScheduleSurfer scheduleSurfer = new ScheduleSurfer(numDays, numTimes, windowDuration, numWindowsInSchedule);
+        ScheduleSurfer scheduleSurfer = new ScheduleSurfer(doable, numDays, numTimes, windowDuration, numWindowsInSchedule);
 
         // Set up ScheduleScorer.
         int minSlotsToCountAsAttendable = 2; // I.e., 30 minutes.
@@ -54,7 +67,7 @@ public class Main
 
         // Set up ScheduleSearch.
         boolean backtrackingOn = false;
-        int numSchedulesToFind = 100; // I.e., the 100 best-scoring schedules will be retained.
+        int numSchedulesToFind = 20; // I.e., the 20 best-scoring schedules will be retained.
         ScheduleSearch searchManager = new ScheduleSearchForMaxMin(scheduleScorer, backtrackingOn, numSchedulesToFind);
         scheduleSurfer.setSearchManager(searchManager);
 

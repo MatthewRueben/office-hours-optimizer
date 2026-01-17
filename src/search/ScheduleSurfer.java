@@ -8,6 +8,7 @@ import java.util.*;
  */
 public class ScheduleSurfer {
 
+    public final boolean[][][] doable;
     public final int numDays;
     public final int numTimes;
     public final int windowDuration;
@@ -23,8 +24,9 @@ public class ScheduleSurfer {
     private ScheduleSearch director = null;
 
 
-    public ScheduleSurfer(int numDays, int numTimes, int windowDuration, int numWindowsToSchedule)
+    public ScheduleSurfer(boolean[][][] doable, int numDays, int numTimes, int windowDuration, int numWindowsToSchedule)
     {
+        this.doable = doable;
         this.numDays = numDays;
         this.numTimes = numTimes;
         this.windowDuration = windowDuration;
@@ -100,9 +102,12 @@ public class ScheduleSurfer {
 
         for (Window nextWindow : nextWindowList)
         {
-            this.currentSchedule.add(nextWindow);
-            findAllScheduleCompletions();
-            this.currentSchedule.removeLast();
+            if (this.windowIsDoable(nextWindow))
+            {
+                this.currentSchedule.add(nextWindow);
+                findAllScheduleCompletions();
+                this.currentSchedule.removeLast();
+            }
         }
         return; // Backtrack.
     }
@@ -142,6 +147,20 @@ public class ScheduleSurfer {
         int firstStartTimeToTry = lastWindowEndTime + 1;
 
         return findAllValidFutureWindows(firstDayToTry, firstStartTimeToTry);
+    }
+
+
+    private boolean windowIsDoable(Window window)
+    {
+        int windowEndTime = window.startTime + window.duration - 1;
+        for (int timeIndex = window.startTime; timeIndex <= windowEndTime; timeIndex++)
+        {
+            if (!this.doable[0][window.day][timeIndex])
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
