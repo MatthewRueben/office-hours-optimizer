@@ -56,10 +56,9 @@ public class Main
 
         // Get search results!
         scheduleSurfer.findAllSchedules();
+
+        // 1. Print best schedules with their scores.
+        // 2. Allow user to inspect attendability of schedules.
         searchManager.printReport();
-
-        // User selects a schedule from the list.
-
-        // Print out all respondents and how much of each hour they can make.
     }
 }

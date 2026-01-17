@@ -85,14 +85,36 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
 
         int numScoresToPrint = 3;
 
+        int index = 0;
         for (ScoredSchedule scoredSchedule : scoredSchedulesSorted)
         {
             List<Score> scoresSorted = scoredSchedule.scoresSorted.stream().sorted().toList();
 
+            System.out.print(index + " ");
             System.out.print(scoredSchedule.schedule);
             System.out.print("; min scores: ");
             System.out.print(scoresSorted.subList(0, numScoresToPrint));
             System.out.println();
+
+            index++;
+        }
+
+        while (true)
+        {
+            System.out.print("Enter index of schedule to inspect (or -1 to quit): ");
+            Scanner keyboard = new Scanner(System.in);
+            int input = keyboard.nextInt();
+
+            if (input == -1)
+            {
+                break;
+            }
+            else
+            {
+                int chosenScheduleIndex = input;
+                List<Window> chosenSchedule = scoredSchedulesSorted.get(chosenScheduleIndex).schedule;
+                this.scorer.printAttendabilityByPerson(chosenSchedule);
+            }
         }
     }
 }
