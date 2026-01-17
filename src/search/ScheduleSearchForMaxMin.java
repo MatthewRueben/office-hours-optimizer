@@ -5,7 +5,7 @@ import java.util.*;
 public class ScheduleSearchForMaxMin implements ScheduleSearch
 {
     private final ScheduleScorer scorer;
-    private final List<ScoredSchedule> bestSchedules;
+    private final TreeSet<ScoredSchedule> bestSchedules;
     private boolean backtrackingOn;
     private int numSchedulesToFind;
 
@@ -32,7 +32,7 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
                 Score thisScore = theseSortedScoresIterator.next();
                 Score thatScore = thoseSortedScoresIterator.next();
 
-                int comparison = thisScore.compareTo(thatScore);
+                int comparison = thisScore.compareTo(thatScore) * -1; // <- DESCENDING ORDER!
                 if (comparison != 0)
                 {
                     return comparison;
@@ -50,7 +50,7 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
     public ScheduleSearchForMaxMin(ScheduleScorer scorer, boolean backtrackingOn, int numSchedulesToFind)
     {
         this.scorer = scorer;
-        this.bestSchedules = new ArrayList<>();
+        this.bestSchedules = new TreeSet<>();
         this.backtrackingOn = backtrackingOn;
         this.numSchedulesToFind = numSchedulesToFind;
     }
@@ -62,15 +62,10 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
     public void submitValidSchedule(List<Window> schedule)
     {
         ScoredSchedule scoredSchedule = new ScoredSchedule(schedule);
-        if (this.bestSchedules.size() < this.numSchedulesToFind
-                || scoredSchedule.compareTo(this.bestSchedules.getLast()) > 0)
+        this.bestSchedules.add(scoredSchedule);
+        if (this.bestSchedules.size() > this.numSchedulesToFind)
         {
-            this.bestSchedules.add(scoredSchedule);
-
-            if (this.bestSchedules.size() > 1)
-            {
-                this.bestSchedules.sort(Comparator.reverseOrder());
-            }
+            this.bestSchedules.removeLast();
         }
     }
 
@@ -92,16 +87,16 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
     @Override
     public void printReport(String[] names, String[][] timeTexts, int numSchedulesToPrint, int numScoresToPrint)
     {
-        List<ScoredSchedule> scoredSchedulesSorted = this.bestSchedules.stream().sorted(Comparator.reverseOrder()).toList();
-
-        int numSchedulesToActuallyPrint = Math.min(numSchedulesToPrint, scoredSchedulesSorted.size());
-        for (int index = 0; index < numSchedulesToActuallyPrint; index++)
+        int numSchedulesToActuallyPrint = Math.min(numSchedulesToPrint, this.bestSchedules.size());
+        Iterator<ScoredSchedule> it = this.bestSchedules.iterator();
+        int numSchedulesPrinted = 0;
+        while (numSchedulesPrinted < numSchedulesToActuallyPrint && it.hasNext())
         {
-            ScoredSchedule scoredSchedule = scoredSchedulesSorted.get(index);
-            List<Score> scoresSorted = scoredSchedule.scoresSorted.stream().sorted().toList();
-            int numScoresToActuallyPrint = Math.min(numScoresToPrint, scoresSorted.size());
+            ScoredSchedule scoredSchedule = it.next();
 
-            System.out.print(index + " ");
+            int numScoresToActuallyPrint = Math.min(numScoresToPrint, scoredSchedule.scoresSorted.size());
+
+            System.out.print(numSchedulesPrinted + " "); // I.e., the 0-indexed position of this schedule.
 
             System.out.print("[");
             for (Window window : scoredSchedule.schedule)
@@ -119,9 +114,10 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
             System.out.print(" -> ");
 
             System.out.print("min scores: ");
-            System.out.print(scoresSorted.subList(0, numScoresToActuallyPrint));
+            System.out.print(scoredSchedule.scoresSorted.subList(0, numScoresToActuallyPrint));
             System.out.println();
 
+            numSchedulesPrinted++;
         }
 
         while (true)
@@ -137,8 +133,22 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
             else
             {
                 int chosenScheduleIndex = input;
-                List<Window> chosenSchedule = scoredSchedulesSorted.get(chosenScheduleIndex).schedule;
-                this.scorer.printAttendabilityByPerson(chosenSchedule, names);
+                int currentScheduleIndex = -1;
+                it = this.bestSchedules.iterator();
+                List<Window> chosenSchedule = null;
+                while (currentScheduleIndex != chosenScheduleIndex && it.hasNext())
+                {
+                    chosenSchedule = it.next().schedule;
+                    currentScheduleIndex++;
+                }
+                if (chosenSchedule == null)
+                {
+                    System.out.println("Something went wrong finding that schedule index!");
+                }
+                else
+                {
+                    this.scorer.printAttendabilityByPerson(chosenSchedule, names);
+                }
             }
         }
     }
