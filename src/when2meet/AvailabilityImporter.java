@@ -49,6 +49,41 @@ public class AvailabilityImporter {
         return names;
     }
 
+
+    public static String[][] loadTimeTexts(String csvFilename, int numDays, int numTimes)
+    {
+        String line;
+        String cvsSplitBy = ","; // Delimiter used in the CSV file
+
+        String[][] timeTexts = new String[numDays][numTimes];
+
+        try (InputStream is = AvailabilityImporter.class.getClassLoader().getResourceAsStream(csvFilename);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is)))
+        {
+            // Header.
+            line = br.readLine();
+            String[] fields = line.split(cvsSplitBy);
+            String[] timeTexts1D = Arrays.copyOfRange(fields, 1, fields.length);
+
+            // Repack into 2D array.
+            int slotIndex;
+            for (int dayIndex = 0; dayIndex < numDays; dayIndex++)
+            {
+                for (int timeIndex = 0; timeIndex < numTimes; timeIndex++)
+                {
+                    slotIndex = (dayIndex * numTimes) + timeIndex;
+                    timeTexts[dayIndex][timeIndex] = timeTexts1D[slotIndex];
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return timeTexts;
+    }
+
     public static boolean[][][] loadAvailability(String csvFilename, int numPeople, int numDays, int numTimes)
     {
         String line;

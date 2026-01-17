@@ -79,24 +79,38 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
 
 
     @Override
-    public void printReport(String[] names)
+    public void printReport(String[] names, String[][] timeTexts, int numSchedulesToPrint, int numScoresToPrint)
     {
         List<ScoredSchedule> scoredSchedulesSorted = this.scoredSchedules.stream().sorted(Comparator.reverseOrder()).toList();
 
-        int numScoresToPrint = 3;
-
-        int index = 0;
-        for (ScoredSchedule scoredSchedule : scoredSchedulesSorted)
+        int numSchedulesToActuallyPrint = Math.min(numSchedulesToPrint, scoredSchedulesSorted.size());
+        for (int index = 0; index < numSchedulesToActuallyPrint; index++)
         {
+            ScoredSchedule scoredSchedule = scoredSchedulesSorted.get(index);
             List<Score> scoresSorted = scoredSchedule.scoresSorted.stream().sorted().toList();
+            int numScoresToActuallyPrint = Math.min(numScoresToPrint, scoresSorted.size());
 
             System.out.print(index + " ");
-            System.out.print(scoredSchedule.schedule);
-            System.out.print("; min scores: ");
-            System.out.print(scoresSorted.subList(0, numScoresToPrint));
+
+            System.out.print("[");
+            for (Window window : scoredSchedule.schedule)
+            {
+                int windowEndTime = window.startTime + window.duration - 1;
+
+                System.out.print(timeTexts[window.day][window.startTime]);
+                System.out.print(" - ");
+                System.out.print(timeTexts[window.day][windowEndTime]);
+
+                System.out.print("; ");
+            }
+            System.out.print("]");
+
+            System.out.print(" -> ");
+
+            System.out.print("min scores: ");
+            System.out.print(scoresSorted.subList(0, numScoresToActuallyPrint));
             System.out.println();
 
-            index++;
         }
 
         while (true)

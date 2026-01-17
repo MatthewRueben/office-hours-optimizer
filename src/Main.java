@@ -28,10 +28,7 @@ public class Main
 
         // Read in the CSV.
         String[] names = AvailabilityImporter.loadNames(csvFilename, numPeople);
-        for (String name : names)
-        {
-            System.out.println(name);
-        }
+        String[][] timeTexts = AvailabilityImporter.loadTimeTexts(csvFilename, numDays, numTimes);
         boolean[][][] available = AvailabilityImporter.loadAvailability(csvFilename, numPeople, numDays, numTimes);
 
         // Visualize availability to check against When2Meet.

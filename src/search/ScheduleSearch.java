@@ -7,5 +7,5 @@ public interface ScheduleSearch
     public void submitValidSchedule(List<Window> schedule);
     public boolean backtrackingIsOn();
     public boolean shouldBacktrack(List<Window> scheduleSoFar);
-    public void printReport(String[] names);
+    public void printReport(String[] names, String[][] timeTexts, int numSchedulesToPrint, int numScoresToPrint);
 }

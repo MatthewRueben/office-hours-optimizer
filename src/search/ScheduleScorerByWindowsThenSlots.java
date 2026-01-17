@@ -93,7 +93,6 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
     {
         for (int personIndex = 0; personIndex < this.numPeople; personIndex++)
         {
-            System.out.print(names[personIndex] + ": ");
             for (Window window : schedule)
             {
                 int dayIndex = window.day;
@@ -113,7 +112,7 @@ public class ScheduleScorerByWindowsThenSlots implements ScheduleScorer
                 }
                 System.out.print(",");
             }
-            System.out.println();
+            System.out.println("  " + names[personIndex]);
         }
     }
 }
