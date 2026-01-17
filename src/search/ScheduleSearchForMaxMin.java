@@ -5,8 +5,9 @@ import java.util.*;
 public class ScheduleSearchForMaxMin implements ScheduleSearch
 {
     private final ScheduleScorer scorer;
-    private final List<ScoredSchedule> scoredSchedules;
+    private final List<ScoredSchedule> bestSchedules;
     private boolean backtrackingOn;
+    private int numSchedulesToFind;
 
     private class ScoredSchedule implements Comparable<ScoredSchedule>
     {
@@ -46,11 +47,12 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
         }
     }
 
-    public ScheduleSearchForMaxMin(ScheduleScorer scorer, boolean backtrackingOn)
+    public ScheduleSearchForMaxMin(ScheduleScorer scorer, boolean backtrackingOn, int numSchedulesToFind)
     {
         this.scorer = scorer;
-        this.scoredSchedules = new ArrayList<>();
+        this.bestSchedules = new ArrayList<>();
         this.backtrackingOn = backtrackingOn;
+        this.numSchedulesToFind = numSchedulesToFind;
     }
 
 
@@ -60,7 +62,16 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
     public void submitValidSchedule(List<Window> schedule)
     {
         ScoredSchedule scoredSchedule = new ScoredSchedule(schedule);
-        this.scoredSchedules.add(scoredSchedule);
+        if (this.bestSchedules.size() < this.numSchedulesToFind
+                || scoredSchedule.compareTo(this.bestSchedules.getLast()) > 0)
+        {
+            this.bestSchedules.add(scoredSchedule);
+
+            if (this.bestSchedules.size() > 1)
+            {
+                this.bestSchedules.sort(Comparator.reverseOrder());
+            }
+        }
     }
 
 
@@ -81,7 +92,7 @@ public class ScheduleSearchForMaxMin implements ScheduleSearch
     @Override
     public void printReport(String[] names, String[][] timeTexts, int numSchedulesToPrint, int numScoresToPrint)
     {
-        List<ScoredSchedule> scoredSchedulesSorted = this.scoredSchedules.stream().sorted(Comparator.reverseOrder()).toList();
+        List<ScoredSchedule> scoredSchedulesSorted = this.bestSchedules.stream().sorted(Comparator.reverseOrder()).toList();
 
         int numSchedulesToActuallyPrint = Math.min(numSchedulesToPrint, scoredSchedulesSorted.size());
         for (int index = 0; index < numSchedulesToActuallyPrint; index++)

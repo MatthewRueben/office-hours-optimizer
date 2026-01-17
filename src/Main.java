@@ -1,5 +1,6 @@
 import search.*;
 import when2meet.AvailabilityImporter;
+import when2meet.When2MeetRecreator;
 
 /**
  * @author Matthew Rueben
@@ -9,10 +10,10 @@ public class Main
     public static void main(String[] args)
     {
         // Hand-made test case.
-        String csvFilename = "test.csv";
-        int numPeople = 9;
-        int numDays = 3;
-        int numTimes = 4;
+//        String csvFilename = "test.csv";
+//        int numPeople = 9;
+//        int numDays = 3;
+//        int numTimes = 4;
 
         // 2026 Spring, CS 371.
 //        String csvFilename = "availabilities_cs371_2026-Q1-Spring.csv";
@@ -26,6 +27,12 @@ public class Main
 //        int numDays = 5;
 //        int numTimes = 32;
 
+        // 2026 Spring, both courses.
+        String csvFilename = "availabilities_both_2026-Q1-Spring.csv";
+        int numPeople = 14 + 7;
+        int numDays = 5;
+        int numTimes = 32;
+
         // Read in the CSV.
         String[] names = AvailabilityImporter.loadNames(csvFilename, numPeople);
         String[][] timeTexts = AvailabilityImporter.loadTimeTexts(csvFilename, numDays, numTimes);
@@ -37,8 +44,8 @@ public class Main
         // Stretch feature: use "Dr. Rueben" entry as constraints.
 
         // Set up ScheduleSurfer.
-        int windowDuration = 3; // I.e., 1 hour.
-        int numWindowsInSchedule = 2;
+        int windowDuration = 4; // I.e., 1 hour.
+        int numWindowsInSchedule = 4;
         ScheduleSurfer scheduleSurfer = new ScheduleSurfer(numDays, numTimes, windowDuration, numWindowsInSchedule);
 
         // Set up ScheduleScorer.
@@ -47,7 +54,8 @@ public class Main
 
         // Set up ScheduleSearch.
         boolean backtrackingOn = false;
-        ScheduleSearch searchManager = new ScheduleSearchForMaxMin(scheduleScorer, backtrackingOn);
+        int numSchedulesToFind = 100; // I.e., the 100 best-scoring schedules will be retained.
+        ScheduleSearch searchManager = new ScheduleSearchForMaxMin(scheduleScorer, backtrackingOn, numSchedulesToFind);
         scheduleSurfer.setSearchManager(searchManager);
 
         // Get search results!
@@ -55,6 +63,8 @@ public class Main
 
         // 1. Print best schedules with their scores.
         // 2. Allow user to inspect attendability of schedules.
-        searchManager.printReport(names);
+        int numSchedulesToPrint = 20;
+        int numScoresToPrint = 5;
+        searchManager.printReport(names, timeTexts, numSchedulesToPrint, numScoresToPrint);
     }
 }
