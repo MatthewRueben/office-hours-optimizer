@@ -19,6 +19,35 @@ public class AvailabilityImporter {
         LOGGER.setLevel(Level.ALL);
     }
 
+    public static String[] loadNames(String csvFilename, int numPeople)
+    {
+        String line;
+        String cvsSplitBy = ","; // Delimiter used in the CSV file
+
+        String[] names = new String[numPeople];
+
+        try (InputStream is = AvailabilityImporter.class.getClassLoader().getResourceAsStream(csvFilename);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is)))
+        {
+            // Header.
+            br.readLine(); // Skip it.
+
+            // Everything after the header.
+            for (int personIndex = 0; personIndex < numPeople; personIndex++)
+            {
+                line = br.readLine();
+                String[] fields = line.split(cvsSplitBy);
+                names[personIndex] = fields[0];
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return names;
+    }
+
     public static boolean[][][] load(String csvFilename, int numPeople, int numDays, int numTimes)
     {
         String line;
